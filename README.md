@@ -193,4 +193,4 @@ The point is the architecture, not the storage backend: **the same code path wit
 
 ## License
 
-Add a license if you intend to publish this repository. It currently ships without one.
+MIT — see [LICENSE](LICENSE).
