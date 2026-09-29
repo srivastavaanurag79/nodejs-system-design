@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title><%= title %></title>
+<style>
+  :root {
+    --paper: #f2f4f7;
+    --panel: #ffffff;
+    --ink: #0f1720;
+    --muted: #5b6673;
+    --line: #d8dee4;
+    --accent: #1d4ed8;
+    --ok: #15803d;
+    --warn: #b45309;
+    --err: #b91c1c;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 64px; }
+
+  header.masthead {
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .masthead-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+
+  .brand .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .brand h1 { font-size: 19px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+
+  .pill {
+    font-family: var(--mono);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: #fbfcfd;
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); }
+  .dot.down { background: var(--err); }
+
+  .lede { margin: 28px 0 24px; color: var(--muted); max-width: 70ch; font-size: 15px; }
+  .lede code, .mono { font-family: var(--mono); }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) {
+    .grid.two { grid-template-columns: 1fr 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .panel h2 { margin: 0; font-size: 16px; font-weight: 620; }
+  .panel p { margin: 0; color: var(--muted); font-size: 14px; }
+  .panel p.note { font-size: 13px; }
+
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  button {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  button:hover { border-color: #b9c3cd; background: #f7f9fb; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: #1a43bd; border-color: #1a43bd; }
+  button:disabled { opacity: 0.55; cursor: default; }
+
+  input {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    min-width: 0;
+    width: 100%;
+  }
+
+  input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .field { display: grid; gap: 6px; }
+  .field label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .field-row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+
+  .stats { display: flex; gap: 18px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 1px; }
+  .stat .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .stat .value { font-family: var(--mono); font-size: 20px; font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  td.mono, th.mono { font-family: var(--mono); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .tag.queued { color: var(--warn); border-color: #f0d3a6; background: #fdf6ea; }
+  .tag.processing { color: var(--accent); border-color: #c3d2f5; background: #eef3fe; }
+  .tag.completed { color: var(--ok); border-color: #bfe0c8; background: #eefaf1; }
+  .tag.failed { color: var(--err); border-color: #f0c4c4; background: #fdeeee; }
+  .tag.cache { color: var(--accent); border-color: #c3d2f5; background: #eef3fe; }
+  .tag.service { color: var(--muted); }
+
+  .live { border: 1px dashed var(--line); border-radius: 6px; padding: 10px 12px; font-family: var(--mono); font-size: 12px; color: var(--muted); word-break: break-all; }
+  .live strong { color: var(--ink); font-weight: 600; }
+
+  .codes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .code { font-family: var(--mono); font-size: 12px; padding: 4px 8px; border-radius: 5px; border: 1px solid var(--line); }
+  .code.ok { color: var(--ok); border-color: #bfe0c8; }
+  .code.warn { color: var(--warn); border-color: #f0d3a6; }
+  .code.err { color: var(--err); border-color: #f0c4c4; }
+
+  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  footer { margin-top: 28px; color: var(--muted); font-size: 12px; font-family: var(--mono); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dot.ok { animation: breathe 2.4s ease-in-out infinite; }
+  }
+  @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <span class="kicker">Companion Demo</span>
+      <h1>Node.js System Design Console</h1>
+    </div>
+    <div class="pill" role="status" aria-live="polite">
+      <span class="dot" id="health-dot"></span>
+      <span id="health-text">checking /health</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="lede">
+    Every panel below drives a real endpoint in this repository.
+    Open DevTools or the server console to watch the structured logs each action produces.
+  </p>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="p-cache">
+      <span class="eyebrow">01 — Cache-aside</span>
+      <h2 id="p-cache">Stop asking the database the same question</h2>
+      <p>The first read reaches the service. The next read is served from cache until the TTL expires.</p>
+      <div class="actions">
+        <button class="primary" id="fetch-products">GET /api/products</button>
+        <button id="reset-cache-note" type="button" hidden></button>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="label">Source</span><span class="value"><span class="tag" id="products-source">—</span></span></div>
+        <div class="stat"><span class="label">Latency</span><span class="value" id="products-latency">—</span></div>
+        <div class="stat"><span class="label">Cache hits</span><span class="value" id="products-hits">0</span></div>
+      </div>
+      <div id="products-table"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="p-uploads">
+      <span class="eyebrow">03 — Object storage</span>
+      <h2 id="p-uploads">Hand large files to storage, not Node</h2>
+      <p>The API returns a storage key and upload target. The 500&nbsp;MB file never touches this process.</p>
+      <div class="field-row">
+        <div class="field">
+          <label for="file-name">File name</label>
+          <input id="file-name" value="inspection-video.mp4" />
+        </div>
+        <div class="field">
+          <label for="file-size">Size (bytes)</label>
+          <input id="file-size" value="524288000" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="do-upload">POST /api/uploads</button>
+      </div>
+      <div class="live" id="upload-result">No upload target requested yet.</div>
+    </section>
+  </div>
+
+  <div class="grid" style="margin-top:16px">
+    <section class="panel" aria-labelledby="p-queue">
+      <span class="eyebrow">02 — Queue + worker</span>
+      <h2 id="p-queue">Move slow work off the request path</h2>
+      <p><code class="mono">POST /api/jobs</code> returns <code class="mono">202</code> immediately. The worker runs the job and retries failures up to 3 times.</p>
+      <div class="actions">
+        <button class="primary" data-job="generate-report">Enqueue report (~1.5s)</button>
+        <button data-job="send-notification">Enqueue notification</button>
+        <button data-job="send-email">Enqueue failing email</button>
+        <button id="refresh-queue">Refresh queue</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="label">Depth</span><span class="value" id="q-depth"><%= queue.depth %></span></div>
+        <div class="stat"><span class="label">Processing</span><span class="value" id="q-processing"><%= queue.processing %></span></div>
+        <div class="stat"><span class="label">Completed</span><span class="value" id="q-completed"><%= queue.completed %></span></div>
+        <div class="stat"><span class="label">Failed</span><span class="value" id="q-failed"><%= queue.failed %></span></div>
+      </div>
+      <div>
+        <table>
+          <thead>
+            <tr><th class="mono">Job</th><th class="mono">Type</th><th class="mono">Status</th><th class="mono">Tries</th><th class="mono">Result</th></tr>
+          </thead>
+          <tbody id="jobs-body">
+            <tr><td colspan="5" class="empty">No jobs yet. Enqueue one above.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel" aria-labelledby="p-rate">
+        <span class="eyebrow">05 — Rate limiting</span>
+        <h2 id="p-rate">Cap what one client can trigger</h2>
+        <p>Fire a burst at <code class="mono">/api/rate-limited</code> (3 requests per 10s) and watch the <code class="mono">429</code> appear with retry headers.</p>
+        <div class="actions">
+          <button class="primary" id="burst">Fire 8 requests</button>
+        </div>
+        <div class="codes" id="burst-codes"><span class="empty">No burst yet.</span></div>
+      </section>
+
+      <section class="panel" aria-labelledby="p-obs">
+        <span class="eyebrow">06 — Observability</span>
+        <h2 id="p-obs">Every response is traceable</h2>
+        <p>Each request carries an <code class="mono">x-request-id</code> and a duration, logged as JSON on the server.</p>
+        <div class="live">
+          <div>request id: <strong id="obs-id">—</strong></div>
+          <div>duration: <strong id="obs-duration">—</strong></div>
+          <div>path: <strong id="obs-path">—</strong></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    Reliability: <code>GET /health</code> + graceful shutdown (Ctrl+C drains in-flight jobs).
+  </footer>
+</main>
+
+<script>
+  const api = (path, options) => fetch(path, { headers: { 'content-type': 'application/json' }, ...options });
+
+  const $ = id => document.getElementById(id);
+
+  const escapeHtml = value => String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+
+  function trackObservability(response, path) {
+    $('obs-id').textContent = response.headers.get('x-request-id') ?? '—';
+    $('obs-path').textContent = path;
+    $('obs-duration').textContent = 'see server log';
+  }
+
+  async function checkHealth() {
+    try {
+      const response = await api('/health');
+      const body = await response.json();
+      $('health-dot').className = 'dot ok';
+      $('health-text').textContent = body.status + ' · up ' + body.uptimeSeconds + 's';
+    } catch (error) {
+      $('health-dot').className = 'dot down';
+      $('health-text').textContent = 'unreachable';
+    }
+  }
+
+  let cacheHits = 0;
+
+  async function fetchProducts() {
+    const started = performance.now();
+    const response = await api('/api/products');
+    const body = await response.json();
+    const latency = Math.round(performance.now() - started);
+
+    const tag = $('products-source');
+    tag.textContent = body.source;
+    tag.className = 'tag ' + body.source;
+    $('products-latency').textContent = latency + ' ms';
+
+    if (body.source === 'cache') {
+      cacheHits += 1;
+      $('products-hits').textContent = String(cacheHits);
+    }
+
+    $('products-table').innerHTML = '<table><thead><tr><th class="mono">Id</th><th>Name</th><th class="mono">Price</th></tr></thead><tbody>'
+      + body.data.map(product => '<tr><td class="mono">' + escapeHtml(product.id) + '</td><td>' + escapeHtml(product.name) + '</td><td class="mono">₹' + escapeHtml(product.price) + '</td></tr>').join('')
+      + '</tbody></table>';
+
+    trackObservability(response, '/api/products');
+  }
+
+  const jobs = new Map();
+  const pollers = new Map();
+
+  function renderJobs() {
+    const body = $('jobs-body');
+
+    if (jobs.size === 0) {
+      body.innerHTML = '<tr><td colspan="5" class="empty">No jobs yet. Enqueue one above.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = [...jobs.values()].reverse().map(job => {
+      const result = job.result ? JSON.stringify(job.result) : (job.error ?? '—');
+      const id = escapeHtml(job.id).slice(0, 8);
+      return '<tr>'
+        + '<td class="mono">' + id + '</td>'
+        + '<td class="mono">' + escapeHtml(job.type) + '</td>'
+        + '<td><span class="tag ' + escapeHtml(job.status) + '">' + escapeHtml(job.status) + '</span></td>'
+        + '<td class="mono">' + escapeHtml(job.attempts) + '/' + escapeHtml(job.maxAttempts) + '</td>'
+        + '<td class="mono">' + escapeHtml(result) + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  async function refreshQueue() {
+    const response = await api('/api/jobs');
+    const body = await response.json();
+    $('q-depth').textContent = body.queue.depth;
+    $('q-processing').textContent = body.queue.processing;
+    $('q-completed').textContent = body.queue.completed;
+    $('q-failed').textContent = body.queue.failed;
+  }
+
+  function pollJob(id) {
+    if (pollers.has(id)) {
+      return;
+    }
+
+    const timer = setInterval(async () => {
+      const response = await api('/api/jobs/' + id);
+      const body = await response.json();
+
+      jobs.set(id, body.job);
+      renderJobs();
+      refreshQueue();
+
+      if (body.job.status === 'completed' || body.job.status === 'failed') {
+        clearInterval(timer);
+        pollers.delete(id);
+      }
+    }, 400);
+
+    pollers.set(id, timer);
+  }
+
+  async function enqueue(type) {
+    const response = await api('/api/jobs', {
+      method: 'POST',
+      body: JSON.stringify({ type, payload: type === 'send-notification' ? { channel: 'email' } : {} })
+    });
+    const body = await response.json();
+
+    if (!body.jobId) {
+      return;
+    }
+
+    jobs.set(body.jobId, { id: body.jobId, type, status: body.jobStatus, attempts: 0, maxAttempts: 3, result: null, error: null });
+    renderJobs();
+    refreshQueue();
+    pollJob(body.jobId);
+  }
+
+  async function doUpload() {
+    const fileName = $('file-name').value.trim();
+    const size = Number($('file-size').value);
+
+    const response = await api('/api/uploads', {
+      method: 'POST',
+      body: JSON.stringify({ fileName, size })
+    });
+    const body = await response.json();
+
+    if (!response.ok) {
+      $('upload-result').textContent = body.message ?? 'Upload target rejected.';
+      return;
+    }
+
+    $('upload-result').innerHTML =
+      'storageKey: <strong>' + escapeHtml(body.metadata.storageKey) + '</strong><br>'
+      + 'size: <strong>' + escapeHtml(body.metadata.size) + ' bytes</strong><br>'
+      + 'uploadUrl: <strong>' + escapeHtml(body.uploadUrl) + '</strong>';
+
+    trackObservability(response, '/api/uploads');
+  }
+
+  async function burst() {
+    const container = $('burst-codes');
+    container.innerHTML = '';
+
+    let lastRequestId = '—';
+
+    for (let i = 0; i < 8; i += 1) {
+      const response = await api('/api/rate-limited');
+      lastRequestId = response.headers.get('x-request-id') ?? lastRequestId;
+
+      const span = document.createElement('span');
+      span.className = 'code ' + (response.status === 200 ? 'ok' : response.status === 429 ? 'err' : 'warn');
+      span.textContent = String(response.status);
+      container.appendChild(span);
+    }
+
+    $('obs-id').textContent = lastRequestId;
+    $('obs-path').textContent = '/api/rate-limited ×8';
+    $('obs-duration').textContent = 'see server log';
+  }
+
+  $('fetch-products').addEventListener('click', fetchProducts);
+  $('do-upload').addEventListener('click', doUpload);
+  $('refresh-queue').addEventListener('click', async () => { await refreshQueue(); renderJobs(); });
+  $('burst').addEventListener('click', burst);
+
+  document.querySelectorAll('[data-job]').forEach(button => {
+    button.addEventListener('click', () => enqueue(button.dataset.job));
+  });
+
+  checkHealth();
+  refreshQueue();
+  setInterval(checkHealth, 5000);
+</script>
+</body>
+</html>
