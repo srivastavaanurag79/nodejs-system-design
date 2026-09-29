@@ -1,6 +1,8 @@
 # System Design for Node.js Backend Developers
 
-Companion repository for the article **System Design for Node.js Backend Developers: From Express API to Production Architecture**.
+Companion repository for the article [**System Design for Node.js Backend Developers: From Express API to Production Architecture**](https://srivastavaanurag79.medium.com/system-design-for-node-js-backend-developers-from-express-api-to-production-architecture-4c39fd75a6c0?sk=e24424959011c9c827f882a282077aaa).
+
+If this repository helps you, the article walks through the reasoning behind each layer in more depth.
 
 The goal is not to build a giant distributed system. It is to show how ordinary Node.js code changes once traffic, data, files, and background work grow — and to make each architectural idea runnable instead of abstract.
 
